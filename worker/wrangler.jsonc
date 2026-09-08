@@ -1,0 +1,20 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "cloudpulse-api",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-09-06",
+
+  "triggers": {
+    "crons": [
+      "*/5 * * * *"
+    ]
+  },
+
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "cloudpulse-db",
+      "database_id": "local"
+    }
+  ]
+}

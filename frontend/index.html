@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="CloudPulse — Serverless uptime monitoring and incident management."
+    >
+
+    <title>CloudPulse — Uptime Monitoring</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+
+<body>
+
+    <!-- =========================
+         Header
+         ========================= -->
+
+    <header class="topbar">
+
+        <div class="brand">
+
+            <h1>CloudPulse</h1>
+
+            <p>
+                Uptime Monitoring & Incident Management
+            </p>
+
+        </div>
+
+
+        <div class="overall-status">
+
+            <span
+                class="status-dot"
+                id="overall-status-dot"
+            ></span>
+
+            <span id="overall-status-text">
+                Checking...
+            </span>
+
+        </div>
+
+    </header>
+
+
+
+    <!-- =========================
+         Main
+         ========================= -->
+
+    <main class="container">
+
+
+        <!-- =========================
+             Summary
+             ========================= -->
+
+        <section class="summary-grid">
+
+            <div class="summary-card">
+
+                <span class="summary-label">
+                    Total Services
+                </span>
+
+                <strong id="total-services">
+                    0
+                </strong>
+
+            </div>
+
+
+            <div class="summary-card">
+
+                <span class="summary-label">
+                    Operational
+                </span>
+
+                <strong id="up-services">
+                    0
+                </strong>
+
+            </div>
+
+
+            <div class="summary-card">
+
+                <span class="summary-label">
+                    Down
+                </span>
+
+                <strong id="down-services">
+                    0
+                </strong>
+
+            </div>
+
+
+            <div class="summary-card">
+
+                <span class="summary-label">
+                    Unknown
+                </span>
+
+                <strong id="unknown-services">
+                    0
+                </strong>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =========================
+             Services
+             ========================= -->
+
+        <section class="services-section">
+
+
+            <div class="section-header">
+
+                <div>
+
+                    <h2>
+                        Services
+                    </h2>
+
+                    <p>
+                        Current health of monitored services
+                    </p>
+
+                </div>
+
+
+                <button
+                    id="add-service-btn"
+                    class="primary-btn"
+                >
+                    + Add Service
+                </button>
+
+            </div>
+
+
+            <div
+                id="services-list"
+                class="services-list"
+            >
+
+                <div class="loading">
+                    Loading services...
+                </div>
+
+            </div>
+
+
+        </section>
+
+
+    </main>
+
+
+
+    <!-- =========================
+         Add Service Modal
+         ========================= -->
+
+    <div
+        id="service-modal"
+        class="modal hidden"
+    >
+
+        <div class="modal-content">
+
+
+            <div class="modal-header">
+
+                <div>
+
+                    <h2>
+                        Add Service
+                    </h2>
+
+                    <p class="modal-subtitle">
+                        Start monitoring a new URL.
+                    </p>
+
+                </div>
+
+
+                <button
+                    id="close-modal-btn"
+                    class="close-btn"
+                    type="button"
+                    aria-label="Close"
+                >
+                    ×
+                </button>
+
+            </div>
+
+
+
+            <form id="service-form">
+
+
+                <div class="form-group">
+
+                    <label for="service-name">
+                        Service Name
+                    </label>
+
+                    <input
+                        type="text"
+                        id="service-name"
+                        placeholder="e.g. GitHub"
+                        autocomplete="off"
+                        required
+                    >
+
+                </div>
+
+
+
+                <div class="form-group">
+
+                    <label for="service-url">
+                        URL
+                    </label>
+
+                    <input
+                        type="url"
+                        id="service-url"
+                        placeholder="https://example.com"
+                        autocomplete="url"
+                        required
+                    >
+
+                </div>
+
+
+
+                <div
+                    id="form-error"
+                    class="form-error hidden"
+                ></div>
+
+
+
+                <div class="form-actions">
+
+                    <button
+                        type="button"
+                        id="cancel-btn"
+                        class="secondary-btn"
+                    >
+                        Cancel
+                    </button>
+
+                    <button
+                        type="submit"
+                        id="save-service-btn"
+                        class="primary-btn"
+                    >
+                        Add Service
+                    </button>
+
+                </div>
+
+
+            </form>
+
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =========================
+         Service Details Modal
+         ========================= -->
+
+    <div
+        id="details-modal"
+        class="modal hidden"
+    >
+
+        <div
+            class="modal-content details-modal-content"
+        >
+
+
+            <div class="modal-header">
+
+                <div>
+
+                    <h2 id="details-service-name">
+                        Service Details
+                    </h2>
+
+                    <p
+                        id="details-service-url"
+                        class="modal-subtitle"
+                    ></p>
+
+                </div>
+
+
+                <button
+                    id="close-details-btn"
+                    class="close-btn"
+                    type="button"
+                    aria-label="Close"
+                >
+                    ×
+                </button>
+
+            </div>
+
+
+
+            <!-- Current Status -->
+
+            <div class="details-status">
+
+                <span
+                    id="details-status-dot"
+                    class="service-status-dot"
+                ></span>
+
+                <strong id="details-status">
+                    UNKNOWN
+                </strong>
+
+            </div>
+
+
+
+            <!-- Analytics -->
+
+            <div class="analytics-grid">
+
+
+                <div class="analytics-card">
+
+                    <span>
+                        Uptime
+                    </span>
+
+                    <strong id="details-uptime">
+                        —
+                    </strong>
+
+                </div>
+
+
+                <div class="analytics-card">
+
+                    <span>
+                        Total Checks
+                    </span>
+
+                    <strong id="details-total-checks">
+                        —
+                    </strong>
+
+                </div>
+
+
+                <div class="analytics-card">
+
+                    <span>
+                        Successful
+                    </span>
+
+                    <strong id="details-successful-checks">
+                        —
+                    </strong>
+
+                </div>
+
+
+                <div class="analytics-card">
+
+                    <span>
+                        Failed
+                    </span>
+
+                    <strong id="details-failed-checks">
+                        —
+                    </strong>
+
+                </div>
+
+
+                <div class="analytics-card">
+
+                    <span>
+                        Avg Response
+                    </span>
+
+                    <strong id="details-average-response">
+                        —
+                    </strong>
+
+                </div>
+
+
+                <div class="analytics-card">
+
+                    <span>
+                        Fastest
+                    </span>
+
+                    <strong id="details-fastest-response">
+                        —
+                    </strong>
+
+                </div>
+
+
+                <div class="analytics-card">
+
+                    <span>
+                        Slowest
+                    </span>
+
+                    <strong id="details-slowest-response">
+                        —
+                    </strong>
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- Recent Checks -->
+
+            <div class="details-section">
+
+                <div class="details-section-header">
+
+                    <h3>
+                        Recent Checks
+                    </h3>
+
+                    <span class="details-period">
+                        Last 24 hours
+                    </span>
+
+                </div>
+
+
+                <div id="details-checks">
+
+                    <div class="loading">
+                        Loading checks...
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- Incidents -->
+
+            <div class="details-section">
+
+                <div class="details-section-header">
+
+                    <h3>
+                        Incidents
+                    </h3>
+
+                    <span class="details-period">
+                        Service history
+                    </span>
+
+                </div>
+
+
+                <div id="details-incidents">
+
+                    <div class="loading">
+                        Loading incidents...
+                    </div>
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =========================
+         Footer
+         ========================= -->
+
+    <footer class="footer">
+
+        <p>
+            CloudPulse • Serverless Uptime Monitoring
+        </p>
+
+    </footer>
+
+
+
+    <script src="app.js"></script>
+
+</body>
+
+</html>
